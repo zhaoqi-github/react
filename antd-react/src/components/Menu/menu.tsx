@@ -24,7 +24,7 @@ interface IMenuContext {
 // 利用createContext
 export const MenuContext = createContext<IMenuContext>({ index: '0' })
 
-const Menu: React.FC<MenuProps> = (props) => {
+export const Menu: React.FC<MenuProps> = (props) => {
   const { defaultIndex, mode, className, style, children, onSelect, defaultOpenSubMenus } = props;
   const [curActive, setCurActive] = useState(defaultIndex); // 记录当前点击的是哪一项
   const classes = classNames('menu', className, {
