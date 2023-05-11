@@ -6,6 +6,11 @@ interface LakerPlayerProps {
   value: string;
   number: number;
 }
+interface GithubUserProps {
+  login: string;
+  url: string;
+  avatar_url: string;
+}
 
 const meta: Meta<typeof AutoComplete> = {
   title: 'AutoComplete',
@@ -71,4 +76,35 @@ export const BCustomComplete: Story = {
     )
   },
   name: '自定义搜索结果模版'
+}
+
+export const CAjaxComplete: Story = {
+  render: () => {
+    const handleFetch = (query: string) => {
+      return fetch(`https://api.github.com/search/users?q=${query}`)
+        .then(res => res.json())
+        .then(({ items }) => {
+          return items.slice(0, 10).map((item: any) => ({ value: item.login, ...item }))
+        })
+    }
+
+    const renderOption = (item: DataSourceType) => {
+      const itemWithGithub = item as DataSourceType<GithubUserProps>
+      return (
+        <>
+          <b>Name: {itemWithGithub.value}</b>
+          <span>url: {itemWithGithub.url}</span>
+        </>
+      )
+    }
+    return (
+      <AutoComplete
+        fetchSuggestions={handleFetch}
+        placeholder="输入 Github 用户名试试"
+        renderOption={renderOption}
+        onSelect={action('selected')}
+      />
+    )
+  },
+  name: '支持异步搜索'
 }
