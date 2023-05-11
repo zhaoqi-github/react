@@ -1,7 +1,8 @@
-import { FC, useState, ChangeEvent, ReactElement, useEffect } from 'react'
+import { FC, useState, ChangeEvent, KeyboardEvent, ReactElement, useEffect } from 'react'
 import Input, { BaseInputProps } from '../Input/input'
 import Icon from '../Icon/icon'
 import useDebounce from '../../hooks/useDebounce'
+import classNames from 'classnames';
 interface DataSourceObject {
   value: string;
 }
@@ -19,11 +20,12 @@ export const AutoComplete: FC<AutoCompleteProps> = (props) => {
   const [inputValue, setInputValue] = useState(value)
   const [suggestions, setSuggestions] = useState<DataSourceType[]>([])
   const [loading, setLoading] = useState(false)
+  const [ highlightIndex, setHighlightIndex] = useState(-1)
+
   const debounceValue = useDebounce(inputValue, 500)
 
   useEffect(() => {
     if (debounceValue) {
-      console.log(debounceValue, 'debounceValue')
       const results = fetchSuggestions(inputValue as string)
       if (results instanceof Promise) {
         setLoading(true)
@@ -37,11 +39,41 @@ export const AutoComplete: FC<AutoCompleteProps> = (props) => {
     } else {
       setSuggestions([])
     }
+    setHighlightIndex(-1)
   }, [debounceValue])
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.trim()
     setInputValue(value)
+  }
+
+  // 高亮某一项
+  const highlight = (index: number) => {
+    if (index < 0) index = 0
+    if (index >= suggestions.length) {
+      index = suggestions.length - 1
+    }
+    setHighlightIndex(index)
+  }
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>)=>{
+    switch(e.key) {
+      case 'Enter': // 回车
+        if (suggestions[highlightIndex]) {
+          handleClick(suggestions[highlightIndex])
+        }
+        break
+      case 'ArrowUp': // up
+        highlight(highlightIndex - 1)
+        break
+      case 'ArrowDown': // down
+        highlight(highlightIndex + 1)
+        break
+      case 'Escape': // esc
+        // setShowDropdown(false)
+        break
+      default:
+        break
+    }
   }
 
   const handleClick = (item: DataSourceType) => {
@@ -60,8 +92,11 @@ export const AutoComplete: FC<AutoCompleteProps> = (props) => {
     return (
       <ul>
         {suggestions.map((item, index) => {
+           const cnames = classNames('suggestion-item', {
+            'is-active': index === highlightIndex
+          })
           return (
-            <li key={index} onClick={() => { handleClick(item) }}>
+            <li key={index} onClick={() => { handleClick(item) }} className={cnames}>
               {renderTemplate(item)}
             </li>
           )
@@ -75,6 +110,7 @@ export const AutoComplete: FC<AutoCompleteProps> = (props) => {
       <Input
         value={inputValue}
         onChange={handleChange}
+        onKeyDown={handleKeyDown}
         {...restProps}
       />
       {loading && <ul><Icon icon="spinner" spin /></ul>}
