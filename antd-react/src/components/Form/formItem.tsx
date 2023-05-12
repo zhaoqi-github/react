@@ -1,7 +1,10 @@
 import classNames from "classnames";
 import React, { FC, ReactNode, useContext, useEffect } from "react";
 import { FormContext } from "./form";
-
+// Required<Pick<T, K>> : 从 T 里面 取出某些 K, 设置成必选
+// Omit<T, K> : T 中除了 K 之外的
+export type SomeRequired<T, K extends keyof T> = Required<Pick<T, K>> & Omit<T, K>
+// type TestType = SomeRequired<FormItemProps, 'getValueFromEvent'>
 export interface FormItemProps {
   name: string;
   label?: string;
@@ -12,17 +15,25 @@ export interface FormItemProps {
 }
 
 export const FormItem: FC<FormItemProps> = (props) => {
-  const { label, name, children, valuePropName, trigger, getValueFromEvent } = props
-  const { dispatch, fields } = useContext(FormContext)
+  const {
+    label,
+    name,
+    children,
+    valuePropName,
+    trigger,
+    getValueFromEvent
+  } = props as SomeRequired<FormItemProps, 'getValueFromEvent' | 'trigger' | 'valuePropName'>
+  const { dispatch, fields, initialValues } = useContext(FormContext)
   const rowClass = classNames('row', {
     'row-no-label': !label
   })
 
   useEffect(() => {
+    const value = (initialValues && initialValues[name]) || ''
     dispatch({
       type: 'addFiled',
       name,
-      value: { label, name, value: '' }
+      value: { label, name, value }
     })
   }, [])
 
@@ -33,13 +44,14 @@ export const FormItem: FC<FormItemProps> = (props) => {
   // value 和 onChange 放到 FormItem 包裹的表单组件上
   // 1. 手动创建属性列表，包含 value 和 onChange 属性
   const onValueChange = (e: any) => {
-    const value = getValueFromEvent && getValueFromEvent(e);
+    const value = getValueFromEvent(e);
     console.log('onValueChange', value);
     dispatch({ type: 'updateValue', name, value })
   }
   const controlProps: Record<string, any> = {}
-  controlProps[valuePropName!] = value // '!': 非空断言, 断言值不为空或未定义
-  controlProps[trigger!] = onValueChange
+  // valuePropName!: 非空断言, 断言值不为空或未定义
+  controlProps[valuePropName] = value
+  controlProps[trigger] = onValueChange
   // 2. 获取 children 数组的第一个元素
   const childList = React.Children.toArray(children)
   // 没有子组件
@@ -51,7 +63,7 @@ export const FormItem: FC<FormItemProps> = (props) => {
     console.warn('Only support one child element in Form.Item, others will be omitted')
   }
   // 不是 ReactElement 的子组件
-  if(!React.isValidElement(childList[0])){
+  if (!React.isValidElement(childList[0])) {
     console.error('Child component is not a valid React Element')
   }
   const child = childList[0] as React.ReactElement

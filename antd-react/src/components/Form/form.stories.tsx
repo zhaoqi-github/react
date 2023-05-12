@@ -26,7 +26,7 @@ type Story = StoryObj<typeof Form>
 export const BasicForm: Story = {
   render: () => {
     return (
-      <Form>
+      <Form initialValues={{ username: 'test', agreement: true }}>
         <Item label='username' name='username'>
           <Input />
         </Item>
@@ -37,7 +37,7 @@ export const BasicForm: Story = {
           <Item
             name='agreement'
             valuePropName='checked'
-            getValueFromEvent={(e)=>e.target.checked}
+            getValueFromEvent={(e) => e.target.checked}
           >
             <input type="checkbox" />
           </Item>
