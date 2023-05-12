@@ -38,7 +38,7 @@ export const FormItem: FC<FormItemProps> = (props) => {
     dispatch({
       type: 'addFiled',
       name,
-      value: { label, name, value, rules, isValid: true  }
+      value: { label, name, value, rules, isValid: true }
     })
   }, [])
 
@@ -46,6 +46,15 @@ export const FormItem: FC<FormItemProps> = (props) => {
   // 获取 store 对应的 value 
   const filedState = fields[name]
   const value = filedState && filedState.value
+  const errors = filedState && filedState.errors
+  const isRequired = rules?.some(rule => rule.required)
+  const hasError = errors && errors.length > 0
+  const labelClass = classNames({
+    'form-item-required': isRequired
+  })
+  const itemClass = classNames(' form-item-control', {
+    'form-item-has-error': hasError
+  })
   // value 和 onChange 放到 FormItem 包裹的表单组件上
   // 1. 手动创建属性列表，包含 value 和 onChange 属性
   const onValueChange = (e: any) => {
@@ -60,7 +69,7 @@ export const FormItem: FC<FormItemProps> = (props) => {
   // valuePropName!: 非空断言, 断言值不为空或未定义
   controlProps[valuePropName] = value
   controlProps[trigger] = onValueChange
-  if(rules){
+  if (rules) {
     controlProps[validateTrigger] = onValueValidate
   }
   // 2. 获取 children 数组的第一个元素
@@ -86,13 +95,20 @@ export const FormItem: FC<FormItemProps> = (props) => {
     <div className={rowClass}>
       {label &&
         <div className="form-item-label">
-          <label title={label}>
+          <label title={label} className={labelClass}>
             {label}
           </label>
         </div>
       }
       <div className="form-item">
-        {returnChildNode}
+        <div className={itemClass}>
+          {returnChildNode}
+        </div>
+        { hasError && 
+          <div className='form-item-explain'>
+            <span>{errors[0].message}</span>
+          </div>
+        }
       </div>
     </div>
   )
