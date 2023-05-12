@@ -28,7 +28,7 @@ export interface BaseInputProps extends Omit<InputHTMLAttributes<HTMLElement>, '
   onChange? : (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
-const Input: FC<BaseInputProps> = (props) => {
+export const Input: FC<BaseInputProps> = (props) => {
   const { disabled, size, icon, prepend, append, style, ...restProps } = props
 
   // 根据属性计算不用的 className

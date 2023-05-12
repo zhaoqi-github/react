@@ -4,6 +4,8 @@ import Item from './formItem'
 // import Input from '../Input'
 // import Button from '../Button'
 import type { Meta, StoryObj } from '@storybook/react';
+import Input from '../Input/input';
+import Button from '../Button/button';
 
 const meta: Meta<typeof Form> = {
   title: 'Form',
@@ -21,7 +23,7 @@ const meta: Meta<typeof Form> = {
 export default meta;
 
 type Story = StoryObj<typeof Form>
-/* export const BasicForm: Story = {
+export const BasicForm: Story = {
   render: () => {
     return (
       <Form>
@@ -35,9 +37,9 @@ type Story = StoryObj<typeof Form>
           <Input />
         </Item>
         <div className='form-submit-area'>
-          <Button type="submit" btnType='primary'></Button>
+          <Button type="submit" btnType='primary'>submit</Button>
         </div>
       </Form>
     )
   }
-} */
+}
