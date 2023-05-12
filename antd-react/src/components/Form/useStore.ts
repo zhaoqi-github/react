@@ -13,7 +13,7 @@ interface FormState {
   isValid: boolean;
 }
 interface FieldsAction {
-  type: 'addFiled';
+  type: 'addFiled' | 'updateValue';
   name: string;
   value: any;
 }
@@ -25,18 +25,24 @@ function fieldsReducer(state: FieldsState, action: FieldsAction): FieldsState {
         ...state,
         [action.name]: { ...action.value },
       };
+    case 'updateValue':
+      return {
+        ...state,
+        [action.name]: { ...state[action.name], value: action.value },
+      };
     default:
       return state;
   }
 }
 function useStore() {
+  // form State
   const [form, setForm] = useState<FormState>({ isValid: true });
   const [fields, dispatch] = useReducer(fieldsReducer, {});
 
   return {
     fields,
     dispatch,
-    form
+    form,
   };
 }
 
