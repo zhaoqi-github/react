@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import React, { FC, ReactNode, useContext, useEffect } from "react";
 import { FormContext } from "./form";
+import { RuleItem } from 'async-validator';
 // Required<Pick<T, K>> : 从 T 里面 取出某些 K, 设置成必选
 // Omit<T, K> : T 中除了 K 之外的
 export type SomeRequired<T, K extends keyof T> = Required<Pick<T, K>> & Omit<T, K>
@@ -12,6 +13,8 @@ export interface FormItemProps {
   valuePropName?: string;
   trigger?: string;
   getValueFromEvent?: (event: any) => any;
+  rules?: RuleItem[];
+  validateTrigger?: string
 }
 
 export const FormItem: FC<FormItemProps> = (props) => {
@@ -21,9 +24,11 @@ export const FormItem: FC<FormItemProps> = (props) => {
     children,
     valuePropName,
     trigger,
-    getValueFromEvent
-  } = props as SomeRequired<FormItemProps, 'getValueFromEvent' | 'trigger' | 'valuePropName'>
-  const { dispatch, fields, initialValues } = useContext(FormContext)
+    getValueFromEvent,
+    rules,
+    validateTrigger
+  } = props as SomeRequired<FormItemProps, 'getValueFromEvent' | 'trigger' | 'valuePropName' | 'validateTrigger'>
+  const { dispatch, fields, initialValues, validateField } = useContext(FormContext)
   const rowClass = classNames('row', {
     'row-no-label': !label
   })
@@ -33,7 +38,7 @@ export const FormItem: FC<FormItemProps> = (props) => {
     dispatch({
       type: 'addFiled',
       name,
-      value: { label, name, value }
+      value: { label, name, value, rules, isValid: true  }
     })
   }, [])
 
@@ -48,10 +53,16 @@ export const FormItem: FC<FormItemProps> = (props) => {
     console.log('onValueChange', value);
     dispatch({ type: 'updateValue', name, value })
   }
+  const onValueValidate = async () => {
+    await validateField(name)
+  }
   const controlProps: Record<string, any> = {}
   // valuePropName!: 非空断言, 断言值不为空或未定义
   controlProps[valuePropName] = value
   controlProps[trigger] = onValueChange
+  if(rules){
+    controlProps[validateTrigger] = onValueValidate
+  }
   // 2. 获取 children 数组的第一个元素
   const childList = React.Children.toArray(children)
   // 没有子组件
@@ -90,6 +101,7 @@ export const FormItem: FC<FormItemProps> = (props) => {
 FormItem.defaultProps = {
   valuePropName: 'value',
   trigger: 'onChange',
-  getValueFromEvent: (e) => e.target.value
+  getValueFromEvent: (e) => e.target.value,
+  validateTrigger: 'onBlur'
 }
 export default FormItem

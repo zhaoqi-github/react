@@ -1,4 +1,5 @@
 import { FC, ReactNode, createContext } from 'react'
+// import { ValidateError } from 'async-validator'
 import useStore from './useStore';
 export interface FormProps {
   name?: string;
@@ -13,18 +14,19 @@ type IFormContext = {
   form: FormState;
 } */
 export type IFormContext =
-  Pick<ReturnType<typeof useStore>, 'dispatch' | 'fields'>
+  Pick<ReturnType<typeof useStore>, 'dispatch' | 'fields' | 'validateField'>
   & Pick<FormProps, 'initialValues'>
 
 export const FormContext = createContext<IFormContext>({} as IFormContext)
 
 export const Form: FC<FormProps> = (props) => {
   const { name, initialValues, children } = props
-  const { form, fields, dispatch } = useStore()
+  const { form, fields, validateField, dispatch } = useStore()
   const passedContext: IFormContext = {
     dispatch,
     fields,
-    initialValues
+    initialValues,
+    validateField
   }
   return (
     <>
