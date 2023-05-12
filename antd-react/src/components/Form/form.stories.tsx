@@ -27,15 +27,20 @@ export const BasicForm: Story = {
   render: () => {
     return (
       <Form>
-        <Item label='username'>
+        <Item label='username' name='username'>
           <Input />
         </Item>
-        <Item label='password'>
+        <Item label='password' name='password'>
           <Input type='password' />
         </Item>
-        <Item>
-          <Input />
-        </Item>
+        <div className='agreement-section' style={{ 'display': 'flex', 'justifyContent': 'center' }}>
+          <Item
+            name='agreement'
+          >
+            <input type="checkbox" />
+          </Item>
+          <span className="agree-text">注册即代表你同意<a href='#'>用户协议</a></span>
+        </div>
         <div className='form-submit-area'>
           <Button type="submit" btnType='primary'>submit</Button>
         </div>
