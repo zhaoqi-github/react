@@ -36,6 +36,8 @@ export const BasicForm: Story = {
         <div className='agreement-section' style={{ 'display': 'flex', 'justifyContent': 'center' }}>
           <Item
             name='agreement'
+            valuePropName='checked'
+            getValueFromEvent={(e)=>e.target.checked}
           >
             <input type="checkbox" />
           </Item>
