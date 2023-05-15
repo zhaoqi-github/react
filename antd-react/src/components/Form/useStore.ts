@@ -1,9 +1,13 @@
 import { useReducer, useState } from 'react';
 import Schema, { RuleItem, ValidateError } from 'async-validator';
+
+export type CustomRuleFunc = ({ getFieldValue }) => RuleItem;
+export type CustomRule = RuleItem | CustomRuleFunc;
+
 interface FieldDetail {
   name: string;
   value: string;
-  rules: any[];
+  rules: CustomRule[];
   isValid: boolean;
   errors: any[];
 }
@@ -45,10 +49,24 @@ function useStore() {
   // form State
   const [form, setForm] = useState<FormState>({ isValid: true });
   const [fields, dispatch] = useReducer(fieldsReducer, {});
+  const getFieldValue = (key: string) => {
+    return fields[key] && fields[key].value;
+  };
+  const transformRules = (rules: CustomRule[]) => {
+    return rules.map(rule => {
+      if (typeof rule === 'function') {
+        const calledRule = rule({ getFieldValue });
+        return calledRule;
+      } else {
+        return rule;
+      }
+    });
+  };
   const validateField = async (name: string) => {
     const { value, rules } = fields[name];
+    const afterRules = transformRules(rules);
     const descriptor = {
-      [name]: rules,
+      [name]: afterRules,
     };
     const valueMap = {
       [name]: value,
@@ -73,6 +91,7 @@ function useStore() {
     dispatch,
     form,
     validateField,
+    getFieldValue,
   };
 }
 

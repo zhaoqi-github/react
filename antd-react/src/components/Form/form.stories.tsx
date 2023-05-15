@@ -6,6 +6,7 @@ import Item from './formItem'
 import type { Meta, StoryObj } from '@storybook/react';
 import Input from '../Input/input';
 import Button from '../Button/button';
+import { CustomRule } from './useStore';
 
 const meta: Meta<typeof Form> = {
   title: 'Form',
@@ -31,6 +32,55 @@ export const BasicForm: Story = {
           <Input />
         </Item>
         <Item label='password' name='password' rules={[{type: 'string', required: true, min: 3, max: 8 }]}>
+          <Input type='password' />
+        </Item>
+        <div className='agreement-section' style={{ 'display': 'flex', 'justifyContent': 'center' }}>
+          <Item
+            name='agreement'
+            valuePropName='checked'
+            getValueFromEvent={(e) => e.target.checked}
+          >
+            <input type="checkbox" />
+          </Item>
+          <span className="agree-text">注册即代表你同意<a href='#'>用户协议</a></span>
+        </div>
+        <div className='form-submit-area'>
+          <Button type="submit" btnType='primary'>submit</Button>
+        </div>
+      </Form>
+    )
+  }
+}
+const confirmRules: CustomRule[] = [
+  { type: 'string',required: true, min: 3, max: 8 },
+  ({ getFieldValue }) => ({
+    asyncValidator(rule, value) {
+      // 用户可以调用 getFieldValue(field) 来获取表单的其他 field 值
+      /* console.log('the value', getFieldValue('password'))
+      console.log(value) */
+      return new Promise((resolve, reject) => {
+        if (value !== getFieldValue('password')) {
+          reject('The two passwords that you entered do not match!')
+        }
+        setTimeout(() => {
+          resolve()
+        }, 1000)
+      })
+
+    }
+  })
+]
+export const ConfirmPasswordForm: Story = {
+  render: () => {
+    return (
+      <Form initialValues={{ username: 'test', agreement: true }}>
+        <Item label='username' name='username' rules={[{ type: 'email', required: true }]}>
+          <Input />
+        </Item>
+        <Item label='password' name='password' rules={[{type: 'string', required: true, min: 3, max: 8 }]}>
+          <Input type='password' />
+        </Item>
+        <Item label='confirm password' name='confirmPassword' rules={confirmRules}>
           <Input type='password' />
         </Item>
         <div className='agreement-section' style={{ 'display': 'flex', 'justifyContent': 'center' }}>

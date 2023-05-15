@@ -2,6 +2,7 @@ import classNames from "classnames";
 import React, { FC, ReactNode, useContext, useEffect } from "react";
 import { FormContext } from "./form";
 import { RuleItem } from 'async-validator';
+import { CustomRule } from './useStore'
 // Required<Pick<T, K>> : 从 T 里面 取出某些 K, 设置成必选
 // Omit<T, K> : T 中除了 K 之外的
 export type SomeRequired<T, K extends keyof T> = Required<Pick<T, K>> & Omit<T, K>
@@ -13,7 +14,7 @@ export interface FormItemProps {
   valuePropName?: string;
   trigger?: string;
   getValueFromEvent?: (event: any) => any;
-  rules?: RuleItem[];
+  rules?: CustomRule[];
   validateTrigger?: string
 }
 
@@ -47,7 +48,7 @@ export const FormItem: FC<FormItemProps> = (props) => {
   const filedState = fields[name]
   const value = filedState && filedState.value
   const errors = filedState && filedState.errors
-  const isRequired = rules?.some(rule => rule.required)
+  const isRequired = rules?.some(rule => (typeof rule !== 'function') && rule.required)
   const hasError = errors && errors.length > 0
   const labelClass = classNames({
     'form-item-required': isRequired
@@ -59,7 +60,6 @@ export const FormItem: FC<FormItemProps> = (props) => {
   // 1. 手动创建属性列表，包含 value 和 onChange 属性
   const onValueChange = (e: any) => {
     const value = getValueFromEvent(e);
-    console.log('onValueChange', value);
     dispatch({ type: 'updateValue', name, value })
   }
   const onValueValidate = async () => {
@@ -104,7 +104,7 @@ export const FormItem: FC<FormItemProps> = (props) => {
         <div className={itemClass}>
           {returnChildNode}
         </div>
-        { hasError && 
+        {hasError &&
           <div className='form-item-explain'>
             <span>{errors[0].message}</span>
           </div>
