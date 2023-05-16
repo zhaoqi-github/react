@@ -1,4 +1,4 @@
-import { FC, ReactNode, createContext } from 'react'
+import { FC, ReactNode, createContext, forwardRef, useImperativeHandle } from 'react'
 // import { ValidateError } from 'async-validator'
 import useStore, { FormState } from './useStore';
 import { ValidateError } from 'async-validator';
@@ -24,12 +24,17 @@ type IFormContext = {
 export type IFormContext =
   Pick<ReturnType<typeof useStore>, 'dispatch' | 'fields' | 'validateField'>
   & Pick<FormProps, 'initialValues'>
+export type IFormRef = Omit<ReturnType<typeof useStore>, 'fields' | 'dispatch' | 'form'>
 
 export const FormContext = createContext<IFormContext>({} as IFormContext)
 
-export const Form: FC<FormProps> = (props) => {
+export const Form = forwardRef<IFormRef, FormProps>((props, ref) => {
   const { name, initialValues, children, onFinish, onFinishFailed } = props
-  const { form, fields, validateField, validateAllFields, dispatch } = useStore(initialValues)
+  const { form, fields, dispatch, ...restProps } = useStore(initialValues)
+  const { validateField, validateAllFields } = restProps
+  useImperativeHandle(ref, () => {
+    return { ...restProps }
+  })
   const passedContext: IFormContext = {
     dispatch,
     fields,
@@ -63,7 +68,7 @@ export const Form: FC<FormProps> = (props) => {
       <pre style={{ 'whiteSpace': 'pre-wrap' }}>{JSON.stringify(form)}</pre>
     </>
   )
-}
+})
 
 Form.defaultProps = {
   name: 'form'

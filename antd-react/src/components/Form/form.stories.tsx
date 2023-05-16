@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import Form from './form'
+import Form, { IFormRef } from './form'
 import Item from './formItem'
 // import Input from '../Input'
 // import Button from '../Button'
@@ -27,7 +27,7 @@ type Story = StoryObj<typeof Form>
 export const BasicForm: Story = {
   render: (args) => {
     return (
-      <Form initialValues={{ username: 'test', agreement: true }} {...args}>
+      <Form initialValues={{ username: 'test', agreement: true }} {...args} ref={ref}>
         <Item label='username' name='username' rules={[{ type: 'email', required: true }]}>
           <Input />
         </Item>
@@ -137,4 +137,38 @@ export const CustomUIForm: Story = {
       </Form>
     )
   }
+}
+
+export const ResetForm = (args) => {
+  const ref = useRef<IFormRef>(null)
+  const resetAll = () => {
+    console.log('form ref', ref.current)
+    console.log('get value', ref.current?.getFieldValue('username'))
+    ref.current?.resetFields();
+  }
+  return (
+    <Form initialValues={{ username: 'test', agreement: true, password: '' }} {...args} ref={ref}>
+      <Item label='username' name='username' rules={[{ type: 'email', required: true }]}>
+        <Input />
+      </Item>
+      <Item label='password' name='password' rules={[{ type: 'string', required: true, min: 3, max: 8 }]}>
+        <Input type='password' />
+      </Item>
+      <div className='agreement-section' style={{ 'display': 'flex', 'justifyContent': 'center' }}>
+        <Item
+          name='agreement'
+          valuePropName='checked'
+          getValueFromEvent={(e) => e.target.checked}
+          rules={[{ type: 'enum', enum: [true], message: '请同意协议' }]}
+        >
+          <input type="checkbox" />
+        </Item>
+        <span className="agree-text">注册即代表你同意<a href='#'>用户协议</a></span>
+      </div>
+      <div className='form-submit-area'>
+        <Button type="submit" btnType='primary'>submit</Button>
+        <Button type="button" onClick={resetAll}>重置</Button>
+      </div>
+    </Form>
+  )
 }
