@@ -39,7 +39,7 @@ export const FormItem: FC<FormItemProps> = (props) => {
     dispatch({
       type: 'addFiled',
       name,
-      value: { label, name, value, rules, isValid: true }
+      value: { label, name, value, rules: rules || [], errors: [], isValid: true }
     })
   }, [])
 
