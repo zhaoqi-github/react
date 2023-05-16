@@ -25,13 +25,13 @@ export default meta;
 
 type Story = StoryObj<typeof Form>
 export const BasicForm: Story = {
-  render: () => {
+  render: (args) => {
     return (
-      <Form initialValues={{ username: 'test', agreement: true }}>
+      <Form initialValues={{ username: 'test', agreement: true }} {...args}>
         <Item label='username' name='username' rules={[{ type: 'email', required: true }]}>
           <Input />
         </Item>
-        <Item label='password' name='password' rules={[{type: 'string', required: true, min: 3, max: 8 }]}>
+        <Item label='password' name='password' rules={[{ type: 'string', required: true, min: 3, max: 8 }]}>
           <Input type='password' />
         </Item>
         <div className='agreement-section' style={{ 'display': 'flex', 'justifyContent': 'center' }}>
@@ -39,6 +39,7 @@ export const BasicForm: Story = {
             name='agreement'
             valuePropName='checked'
             getValueFromEvent={(e) => e.target.checked}
+            rules={[{ type: 'enum', enum: [true], message: '请同意协议' }]}
           >
             <input type="checkbox" />
           </Item>
@@ -52,7 +53,7 @@ export const BasicForm: Story = {
   }
 }
 const confirmRules: CustomRule[] = [
-  { type: 'string',required: true, min: 3, max: 8 },
+  { type: 'string', required: true, min: 3, max: 8 },
   ({ getFieldValue }) => ({
     asyncValidator(rule, value) {
       // 用户可以调用 getFieldValue(field) 来获取表单的其他 field 值
@@ -77,7 +78,7 @@ export const ConfirmPasswordForm: Story = {
         <Item label='username' name='username' rules={[{ type: 'email', required: true }]}>
           <Input />
         </Item>
-        <Item label='password' name='password' rules={[{type: 'string', required: true, min: 3, max: 8 }]}>
+        <Item label='password' name='password' rules={[{ type: 'string', required: true, min: 3, max: 8 }]}>
           <Input type='password' />
         </Item>
         <Item label='confirm password' name='confirmPassword' rules={confirmRules}>
