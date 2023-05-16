@@ -19,7 +19,7 @@ export interface ValidateErrorType extends Error {
   errors: ValidateError[];
   fields: Record<string, ValidateError[]>;
 }
-interface FormState {
+export interface FormState {
   isValid: boolean;
   isSubmitting: boolean;
   errors: Record<string, ValidateError[]>;

@@ -72,9 +72,9 @@ const confirmRules: CustomRule[] = [
   })
 ]
 export const ConfirmPasswordForm: Story = {
-  render: () => {
+  render: (args) => {
     return (
-      <Form initialValues={{ username: 'test', agreement: true }}>
+      <Form initialValues={{ username: 'test', agreement: true }} {...args}>
         <Item label='username' name='username' rules={[{ type: 'email', required: true }]}>
           <Input />
         </Item>
@@ -89,6 +89,7 @@ export const ConfirmPasswordForm: Story = {
             name='agreement'
             valuePropName='checked'
             getValueFromEvent={(e) => e.target.checked}
+            rules={[{ type: 'enum', enum: [true], message: '请同意协议' }]}
           >
             <input type="checkbox" />
           </Item>
@@ -97,6 +98,42 @@ export const ConfirmPasswordForm: Story = {
         <div className='form-submit-area'>
           <Button type="submit" btnType='primary'>submit</Button>
         </div>
+      </Form>
+    )
+  }
+}
+
+export const CustomUIForm: Story = {
+  render: (args) => {
+    return (
+      <Form initialValues={{ username: 'test', agreement: true }} {...args}>
+        {({ isSubmitting, isValid }) => (
+          <>
+            <Item label='username' name='username' rules={[{ type: 'email', required: true }]}>
+              <Input />
+            </Item>
+            <Item label='password' name='password' rules={[{ type: 'string', required: true, min: 3, max: 8 }]}>
+              <Input type='password' />
+            </Item>
+            <Item label='confirm password' name='confirmPassword' rules={confirmRules}>
+              <Input type='password' />
+            </Item>
+            <div className='agreement-section' style={{ 'display': 'flex', 'justifyContent': 'center' }}>
+              <Item
+                name='agreement'
+                valuePropName='checked'
+                getValueFromEvent={(e) => e.target.checked}
+                rules={[{ type: 'enum', enum: [true], message: '请同意协议' }]}
+              >
+                <input type="checkbox" />
+              </Item>
+              <span className="agree-text">注册即代表你同意<a href='#'>用户协议</a></span>
+            </div>
+            <div className='form-submit-area'>
+              <Button type="submit" btnType='primary'>登陆 {isSubmitting ? '验证中' : '验证完毕'} {isValid ? '通过😄' : '没通过😢'} </Button>
+            </div>
+          </>
+        )}
       </Form>
     )
   }
