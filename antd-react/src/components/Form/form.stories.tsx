@@ -27,7 +27,7 @@ type Story = StoryObj<typeof Form>
 export const BasicForm: Story = {
   render: (args) => {
     return (
-      <Form initialValues={{ username: 'test', agreement: true }} {...args} ref={ref}>
+      <Form initialValues={{ username: 'test', agreement: true }} {...args} >
         <Item label='username' name='username' rules={[{ type: 'email', required: true }]}>
           <Input />
         </Item>
