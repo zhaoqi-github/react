@@ -1,3 +1,4 @@
+import React from 'react';
 import { FC, useState, ChangeEvent, KeyboardEvent, ReactElement, useEffect, useRef } from 'react'
 import Input, { BaseInputProps } from '../Input/input'
 import Icon from '../Icon/icon'
