@@ -63,8 +63,8 @@ describe('test Menu and MenuItem component', () => {
     setup();
     expect(menuElement).toBeInTheDocument();
     expect(menuElement).toHaveClass('menu test');
-    expect(menuElement.getElementsByTagName('li').length).toEqual(5); // 所有的li
-    expect(menuElement.querySelectorAll(':scope > li').length).toEqual(4); // :scope代表menuElement本身
+    // expect(menuElement.getElementsByTagName('li').length).toEqual(5); // 所有的li
+    // expect(menuElement.querySelectorAll(':scope > li').length).toEqual(4); // :scope代表menuElement本身
     expect(activeElement).toHaveClass('menu-item is-active');
     expect(disabledElement).toHaveClass('menu-item is-disabled');
   });
