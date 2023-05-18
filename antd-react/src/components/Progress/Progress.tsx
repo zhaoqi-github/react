@@ -10,10 +10,13 @@ export interface ProgressProps {
 const Progress: React.FC<ProgressProps> = (props) => {
   const { percent, showText, strokeHeight, styles, theme } = props;
   return (
-    <div style={styles}>
-      <div style={{ height: `${strokeHeight}` }}>
-        <div style={{ width: `${percent}%` }}>
-          {showText && <span>{`${percent}%`}</span>}
+    <div className="progress-bar" style={styles}>
+      <div className="progress-bar-outer" style={{ height: `${strokeHeight}px`}}>
+        <div 
+          className={`progress-bar-inner color-${theme}`}
+          style={{width: `${percent}%`}}
+        >
+          {showText && <span className="inner-text">{`${percent}%`}</span>}
         </div>
       </div>
     </div>
@@ -21,9 +24,9 @@ const Progress: React.FC<ProgressProps> = (props) => {
 }
 
 Progress.defaultProps = {
-  strokeHeight: 14,
+  strokeHeight: 15,
   showText: true,
-  theme: 'primary'
+  theme: "primary",
 }
 
 export default Progress;

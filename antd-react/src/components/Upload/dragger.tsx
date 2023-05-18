@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import React, { useState } from "react";
 
 export interface DraggerProps {
@@ -7,6 +8,9 @@ export interface DraggerProps {
 export const Dragger: React.FC<DraggerProps> = (props) => {
   const { onFile, children } = props
   const [dragOver, setDragOver] = useState(false)
+  const classes = classNames('uploader-dragger', {
+    'is-dragover': dragOver
+  })
   const handleDrag = (e: React.DragEvent<HTMLDivElement>, over: boolean) => {
     e.preventDefault()
     setDragOver(over)
@@ -14,10 +18,13 @@ export const Dragger: React.FC<DraggerProps> = (props) => {
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragOver(false);
+
+    console.log('inside drag', e.dataTransfer.files)
     onFile(e.dataTransfer.files)
   }
   return (
     <div
+      className={classes}
       onDragOver={(e) => { handleDrag(e, true) }}
       onDragLeave={(e) => { handleDrag(e, false) }}
       onDrop={handleDrop}
